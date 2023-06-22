@@ -1,0 +1,4 @@
+name: DiamondBalance
+version: '${project.version}'
+main: com.github.blc5.diamondbalance.DiamondBalance
+api-version: 1.20
