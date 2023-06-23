@@ -38,11 +38,8 @@ public class ItemPickupListener implements Listener
         if (!container.has(plugin.diamondUserKey, PersistentDataType.STRING)) {
             container.set(plugin.diamondUserKey, PersistentDataType.STRING, player.getUniqueId().toString());
 
-            // Debugging, just to make sure it works
-            player.sendMessage(Component.text(container.get(plugin.diamondUserKey, PersistentDataType.STRING)));
-
             ArrayList<TextComponent> lore = new ArrayList<>();
-            lore.add(Component.text(player.getName()).color(TextColor.color(0x80A8BE)).style(Style.style(TextDecoration.ITALIC)));
+            lore.add(Component.text(player.getName()).style(Style.style(TextColor.color(0x80A8BE), TextDecoration.ITALIC)));
             itemStack.lore(lore);
         }
 
