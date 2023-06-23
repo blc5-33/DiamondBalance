@@ -1,9 +1,8 @@
 package com.github.blc5.diamondbalance;
 
-import com.github.blc5.diamondbalance.commands.CommandCheckUUID;
+//import com.github.blc5.diamondbalance.commands.CommandCheckUUID;
 import com.github.blc5.diamondbalance.listeners.ItemPickupListener;
 import net.milkbowl.vault.economy.Economy;
-import org.bukkit.NamespacedKey;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -13,7 +12,6 @@ public final class DiamondBalance extends JavaPlugin {
 
     private final Logger log = getServer().getLogger();
     public static Economy econ;
-    public final NamespacedKey diamondUserKey = new NamespacedKey(this, "diamond-user-key");
 
     @Override
     public void onDisable() {
@@ -29,7 +27,6 @@ public final class DiamondBalance extends JavaPlugin {
         }
         log.info("Enabled DiamondBalance plugin v1.0-SNAPSHOT");
 
-        getServer().getCommandMap().register("diamondbalance", new CommandCheckUUID(this));
         getServer().getPluginManager().registerEvents(new ItemPickupListener(this), this);
     }
     private boolean setupEconomy() {

@@ -2,20 +2,18 @@ package com.github.blc5.diamondbalance.listeners;
 
 import com.github.blc5.diamondbalance.DiamondBalance;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
-import net.kyori.adventure.text.format.Style;
-import net.kyori.adventure.text.format.TextColor;
-import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerAttemptPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.persistence.PersistentDataContainer;
-import org.bukkit.persistence.PersistentDataType;
 
-import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+import static com.github.blc5.diamondbalance.listeners.ItemStackLoreUtil.generateLore;
 
 public class ItemPickupListener implements Listener
 {
@@ -31,16 +29,23 @@ public class ItemPickupListener implements Listener
         if (itemStack.getType() != Material.DIAMOND && itemStack.getType() != Material.DIAMOND_BLOCK)
             return;
         Player player = e.getPlayer();
-        PersistentDataContainer container = itemStack.getItemMeta().getPersistentDataContainer();
+        List<Component> currLore = itemStack.lore();
 
-        // Diamonds being picked up do NOT have an associated UUID, most likely freshly mined, needs to have
-        // the player UUID added
-        if (!container.has(plugin.diamondUserKey, PersistentDataType.STRING)) {
-            container.set(plugin.diamondUserKey, PersistentDataType.STRING, player.getUniqueId().toString());
-
-            ArrayList<TextComponent> lore = new ArrayList<>();
-            lore.add(Component.text(player.getName()).style(Style.style(TextColor.color(0x80A8BE), TextDecoration.ITALIC)));
-            itemStack.lore(lore);
+        if (currLore == null) {
+            DiamondBalance.econ.depositPlayer(player, itemStack.getAmount());
+            generateLore(itemStack, player);
+            // Edge case here: if player picks up diamonds on the ground but can't hold all of em, the entire stack's
+            // amount is still added to balance, but there's still leftovers on the ground. Despawn/item destruction
+            // event handling means that these will be subtracted if they don't pick it up. So it should be alright.
+        }
+        else if (!currLore.get(1).toString().equals(player.getUniqueId().toString())) {
+            OfflinePlayer other = plugin.getServer().getOfflinePlayer(UUID.fromString(currLore.get(1).toString()));
+            DiamondBalance.econ.withdrawPlayer(other, itemStack.getAmount());
+            DiamondBalance.econ.depositPlayer(player, itemStack.getAmount());
+            generateLore(itemStack, player);
+        }
+        else if (!currLore.get(0).toString().equals(player.getName())) {
+            generateLore(itemStack, player);
         }
 
     }
