@@ -1,7 +1,9 @@
 package com.github.blc5.diamondbalance.listeners;
 
 import com.github.blc5.diamondbalance.DiamondBalance;
+import com.github.blc5.diamondbalance.ItemStackEconUtil;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -23,7 +25,7 @@ public class ItemPickupListener implements Listener
     @EventHandler
     public void onValuablePickup(PlayerAttemptPickupItemEvent e) {
         ItemStack itemStack = e.getItem().getItemStack();
-        if (! DiamondBalance.materialValueMap.containsKey(itemStack.getType().toString()))
+        if (! ItemStackEconUtil.isRegisteredValuable(itemStack))
             return;
         Player player = e.getPlayer();
         List<Component> currLore = itemStack.lore();
@@ -35,13 +37,14 @@ public class ItemPickupListener implements Listener
             // amount is still added to balance, but there's still leftovers on the ground. Despawn/item destruction
             // event handling means that these will be subtracted if they don't pick it up. So it should be alright.
         }
-        else if (!currLore.get(1).toString().equals(player.getUniqueId().toString())) {
-            OfflinePlayer other = plugin.getServer().getOfflinePlayer(UUID.fromString(currLore.get(1).toString()));
+        else if (!((TextComponent)currLore.get(1)).content().equals(player.getUniqueId().toString())) {
+            OfflinePlayer other = plugin.getServer().getOfflinePlayer(UUID.fromString(
+                    ((TextComponent)currLore.get(1)).content()));
             ItemStackEconUtil.withdrawValuable(other, itemStack);
             ItemStackEconUtil.depositValuable(player, itemStack);
             ItemStackEconUtil.generateLore(itemStack, player);
         }
-        else if (!currLore.get(0).toString().equals(player.getName())) {
+        else if (!((TextComponent)currLore.get(0)).content().equals(player.getName())) {
             ItemStackEconUtil.generateLore(itemStack, player);
         }
 

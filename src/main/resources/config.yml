@@ -1,4 +1,4 @@
-itemvalues:
+ItemValues:
   # Use the Spigot Item identifiers
   DIAMOND: 1
   DIAMOND_BLOCK: 9

@@ -1,5 +1,6 @@
 package com.github.blc5.diamondbalance;
 
+import com.github.blc5.diamondbalance.commands.CommandSetItemOwner;
 import com.github.blc5.diamondbalance.listeners.ItemPickupListener;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -12,13 +13,14 @@ import java.util.logging.Logger;
 
 public final class DiamondBalance extends JavaPlugin {
 
-    private final Logger logger = getServer().getLogger();
+    public final String cmdPrefix = "diabal";
+    public final Logger logger = getServer().getLogger();
     public static Economy econ;
     public static @NotNull HashMap<String, Integer> materialValueMap = new HashMap<>();
 
     @Override
     public void onDisable() {
-        logger.info(String.format("[%s] Disabled Version %s", getName(), getDescription().getVersion()));
+        logger.info(String.format("[%s] Disabled Version %s", getName(), getPluginMeta().getVersion()));
     }
 
     @Override
@@ -30,6 +32,7 @@ public final class DiamondBalance extends JavaPlugin {
             return;
         }
         registerListeners();
+        registerCommands();
         registerMaterialValues();
     }
 
@@ -37,22 +40,28 @@ public final class DiamondBalance extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new ItemPickupListener(this), this);
     }
 
+    private void registerCommands() {
+        getServer().getCommandMap().register(cmdPrefix, new CommandSetItemOwner(this));
+    }
+
     private void registerMaterialValues() {
         try
         {
-            Objects.requireNonNull(getConfig().getConfigurationSection("itemvalues")).getValues(false)
+            Objects.requireNonNull(getConfig().getConfigurationSection("ItemValues")).getValues(false)
                     .forEach((key, value) ->
                     {
                         if (value instanceof Integer)
                             materialValueMap.put(key, (Integer) value);
                         else
-                            logger.warning(String.format("[%s] Could not load value %s for material %s!",
+                            logger.severe(String.format("[%s] Non-integer value %s for material %s!",
                                     getName(), value, key));
                     });
+            if (materialValueMap.isEmpty())
+                logger.warning("[%s] No material values registered! Is config.yml/ItemValues empty?");
         }
         catch (NullPointerException e)
         {
-            logger.warning(String.format("[%s] Could not find material values configuration section.", getName()));
+            logger.severe(String.format("[%s] Could not find material values configuration section.", getName()));
         }
     }
 
