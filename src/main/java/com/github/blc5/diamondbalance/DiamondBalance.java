@@ -1,8 +1,10 @@
 package com.github.blc5.diamondbalance;
 
 import com.github.blc5.diamondbalance.commands.CommandSetItemOwner;
+import com.github.blc5.diamondbalance.listeners.InventoryItemClick;
 import com.github.blc5.diamondbalance.listeners.ItemPickupListener;
 import net.milkbowl.vault.economy.Economy;
+import org.bukkit.Server;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -14,20 +16,19 @@ import java.util.logging.Logger;
 public final class DiamondBalance extends JavaPlugin {
 
     public final String cmdPrefix = "diabal";
-    public final Logger logger = getServer().getLogger();
+    public static Logger logger;
     public static Economy econ;
+    public static Server server;
     public static @NotNull HashMap<String, Integer> materialValueMap = new HashMap<>();
 
-    @Override
-    public void onDisable() {
-        logger.info(String.format("[%s] Disabled Version %s", getName(), getPluginMeta().getVersion()));
-    }
 
     @Override
     public void onEnable() {
         saveDefaultConfig();
+        server = getServer();
+        logger = getLogger();
         if (!setupEconomy()) {
-            logger.severe(String.format("[%s] - Disabled due to no Vault dependency found!", getName()));
+            logger.severe("Disabled due to no Vault dependency found!");
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
@@ -36,8 +37,14 @@ public final class DiamondBalance extends JavaPlugin {
         registerMaterialValues();
     }
 
+    @Override
+    public void onDisable() {
+        logger.info(String.format("Disabled Version %s", getPluginMeta().getVersion()));
+    }
+
     private void registerListeners() {
-        getServer().getPluginManager().registerEvents(new ItemPickupListener(this), this);
+        getServer().getPluginManager().registerEvents(new ItemPickupListener(), this);
+        getServer().getPluginManager().registerEvents(new InventoryItemClick(), this);
     }
 
     private void registerCommands() {
@@ -53,15 +60,15 @@ public final class DiamondBalance extends JavaPlugin {
                         if (value instanceof Integer)
                             materialValueMap.put(key, (Integer) value);
                         else
-                            logger.severe(String.format("[%s] Non-integer value %s for material %s!",
-                                    getName(), value, key));
+                            logger.severe(String.format("Non-integer value %s for material %s!",
+                                    value, key));
                     });
             if (materialValueMap.isEmpty())
-                logger.warning("[%s] No material values registered! Is config.yml/ItemValues empty?");
+                logger.warning("No material values registered! Is config.yml/ItemValues empty?");
         }
         catch (NullPointerException e)
         {
-            logger.severe(String.format("[%s] Could not find material values configuration section.", getName()));
+            logger.severe("Could not find material values configuration section.");
         }
     }
 
@@ -74,7 +81,7 @@ public final class DiamondBalance extends JavaPlugin {
         if (rsp == null) {
             return false;
         }
-        logger.info(String.format("[%s] Vault dependency found!", getName()));
+        logger.info("Vault dependency found!");
         econ = rsp.getProvider();
         return true;
     }

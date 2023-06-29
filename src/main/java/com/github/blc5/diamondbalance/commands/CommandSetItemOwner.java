@@ -23,31 +23,27 @@ public class CommandSetItemOwner extends Command
     }
 
     public boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String[] args) {
-        if (args.length == 0)
-        {
-            sender.sendMessage(Component.text(String.format("[%s] No player name provided!",
-                    plugin.getName())).color(NamedTextColor.YELLOW));
-            return false;
-        }
-        else if (args.length > 1)
-        {
-            sender.sendMessage(Component.text(String.format("[%s] Too many arguments!",
-                    plugin.getName())).color(NamedTextColor.YELLOW));
-            return false;
-        }
 
         if (sender instanceof Player)
         {
+            if (args.length == 0)
+            {
+                sender.sendMessage(Component.text(String.format("[%s] No player name provided!",
+                        plugin.getName())).color(NamedTextColor.YELLOW));
+                return false;
+            }
+            else if (args.length > 1)
+            {
+                sender.sendMessage(Component.text(String.format("[%s] Too many arguments!",
+                        plugin.getName())).color(NamedTextColor.YELLOW));
+                return false;
+            }
+
             Player player = (Player) sender;
             OfflinePlayer specifiedPlayer = plugin.getServer().getOfflinePlayer(args[0]);
             ItemStack itemStack = player.getInventory().getItemInMainHand();
             if (ItemStackEconUtil.isRegisteredValuable(itemStack))
             {
-                ItemStackEconUtil.generateLore(itemStack, specifiedPlayer);
-                sender.sendMessage(Component.text(String.format("[%s] Item lore owner updated.",
-                        plugin.getName())).color(NamedTextColor.GREEN));
-
-
                 if (!DiamondBalance.econ.hasAccount(specifiedPlayer))
                 {
                     player.sendMessage(Component.text(String.format("[%s] Player does not have player bank account.",
@@ -57,20 +53,28 @@ public class CommandSetItemOwner extends Command
                     {
                         player.sendMessage(Component.text(String.format("[%s] Player account successfully created.",
                                 plugin.getName())).color(NamedTextColor.GREEN));
-                        ItemStackEconUtil.depositValuable(specifiedPlayer, itemStack);
                     }
                     else
                         player.sendMessage(Component.text(String.format(
-                                "[%s] Could not create player account! May not be able to view their balance.",
-                                plugin.getName())).color(NamedTextColor.YELLOW));
+                                "[%s] Could not create player account! Action failed.",
+                                plugin.getName())).color(NamedTextColor.RED));
+                }
+
+                if (DiamondBalance.econ.hasAccount(specifiedPlayer))
+                {
+                    player.sendMessage(Component.text(String.format("[%s] Item lore owner updated.",
+                            plugin.getName())).color(NamedTextColor.GREEN));
+                    ItemStackEconUtil.processValuableTransfer(specifiedPlayer, itemStack);
                 }
             }
             else
-                sender.sendMessage(Component.text(String.format("[%s] This item does not have an assigned value!.",
+                player.sendMessage(Component.text(String.format("[%s] This item does not have an assigned value!",
                         plugin.getName())).color(NamedTextColor.YELLOW));
         }
         else
-            plugin.logger.warning(String.format("[%s] Only players can execute this command!", plugin.getName()));
+            sender.sendMessage(Component.text(String.format(
+                    "[%s] Only players can execute this command!",
+                    plugin.getName())).color(NamedTextColor.YELLOW));
         return true;
     }
 
