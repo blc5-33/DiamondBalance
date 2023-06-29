@@ -18,6 +18,7 @@ public class ItemStackEconUtil
         if (!DiamondBalance.materialValueMap.containsKey(itemStack.getType().toString()))
             return false;
 
+        // Debug
         DiamondBalance.logger.info(String.format(
                 "[%s] Player: %s , Amount to be deposited: %d",
                 DiamondBalance.server.getName(),
@@ -32,6 +33,14 @@ public class ItemStackEconUtil
     public static boolean withdrawValuable(OfflinePlayer offlinePlayer, ItemStack itemStack) {
         if (!isRegisteredValuable(itemStack))
             return false;
+
+        // Debug
+        DiamondBalance.logger.info(String.format(
+                "[%s] Player: %s , Amount to be withdrawn: %d",
+                DiamondBalance.server.getName(),
+                offlinePlayer.getName(),
+                DiamondBalance.materialValueMap.get(itemStack.getType().toString()) * itemStack.getAmount())
+        );
 
         DiamondBalance.econ.withdrawPlayer(offlinePlayer,
                 DiamondBalance.materialValueMap.get(itemStack.getType().toString()) * itemStack.getAmount());

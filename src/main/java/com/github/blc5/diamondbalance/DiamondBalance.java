@@ -1,8 +1,9 @@
 package com.github.blc5.diamondbalance;
 
 import com.github.blc5.diamondbalance.commands.CommandSetItemOwner;
-import com.github.blc5.diamondbalance.listeners.InventoryItemClick;
+import com.github.blc5.diamondbalance.listeners.InventoryItemClickListener;
 import com.github.blc5.diamondbalance.listeners.ItemPickupListener;
+import com.github.blc5.diamondbalance.listeners.PlayerBeaconChangeListener;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Server;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -44,7 +45,8 @@ public final class DiamondBalance extends JavaPlugin {
 
     private void registerListeners() {
         getServer().getPluginManager().registerEvents(new ItemPickupListener(), this);
-        getServer().getPluginManager().registerEvents(new InventoryItemClick(), this);
+        getServer().getPluginManager().registerEvents(new InventoryItemClickListener(), this);
+        getServer().getPluginManager().registerEvents(new PlayerBeaconChangeListener(), this);
     }
 
     private void registerCommands() {

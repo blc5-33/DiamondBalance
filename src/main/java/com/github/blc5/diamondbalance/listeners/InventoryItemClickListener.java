@@ -10,13 +10,13 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 
 import java.util.HashSet;
 
-public class InventoryItemClick implements Listener
+public class InventoryItemClickListener implements Listener
 {
     private final HashSet<InventoryAction> validAsyncActions;
     private final HashSet<InventoryAction> validInstantActions;
 //    private final HashMap<InventoryAction, String> debugClickTypeMap;
 
-    public InventoryItemClick() {
+    public InventoryItemClickListener() {
         validAsyncActions = new HashSet<>();
         validInstantActions = new HashSet<>();
 
@@ -63,6 +63,7 @@ public class InventoryItemClick implements Listener
                 ItemStackEconUtil.processValuableTransfer(player, e.getCurrentItem());
             else if (validAsyncActions.contains(e.getAction()) && e.getClickedInventory() == player.getInventory())
                 ItemStackEconUtil.processValuableTransfer(player, e.getCursor());
+
         }
     }
 }
