@@ -80,11 +80,13 @@ public class ItemStackEconUtil
     public static void processValuableDeduction(ItemStack itemStack, int withhold) {
         if (! isRegisteredValuable(itemStack))
             return;
+
         List<Component> currLore = itemStack.lore();
         if (currLore != null) {
             OfflinePlayer offlinePlayer = DiamondBalance.server.getOfflinePlayer(UUID.fromString(
                     ((TextComponent)currLore.get(1)).content()));
             withdrawValuable(offlinePlayer, itemStack, withhold);
+            itemStack.lore(null);
         }
     }
 

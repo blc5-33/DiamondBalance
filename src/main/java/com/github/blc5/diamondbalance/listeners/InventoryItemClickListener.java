@@ -56,9 +56,11 @@ public class InventoryItemClickListener implements Listener
 
         Player player = (Player) e.getWhoClicked();
 
-        // Creative player click events are ALWAYS PLACE_ALL
-        if (player.getGameMode() == GameMode.CREATIVE ||
-            player.getGameMode() == GameMode.SPECTATOR)
+        if (player.getGameMode() == GameMode.CREATIVE) {
+            ItemStackEconUtil.processValuableDeduction(e.getCursor());
+            return;
+        }
+        else if (player.getGameMode() == GameMode.SPECTATOR)
             return;
 
 //            DiamondBalance.logger.info(String.format("Click Type: %s", debugClickTypeMap.get(e.getAction())));

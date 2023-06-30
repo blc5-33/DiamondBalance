@@ -14,6 +14,7 @@ public class CraftItemListener implements Listener {
         if (!(e.getWhoClicked() instanceof Player))
             return;
         Player player = (Player) e.getWhoClicked();
+
         ItemStack result = e.getInventory().getResult();
 
         int amountCrafts = Integer.MAX_VALUE;
