@@ -10,7 +10,9 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.*;
 
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.stream.Collectors;
 
 public class InventoryItemClickListener implements Listener
 {
@@ -76,34 +78,38 @@ public class InventoryItemClickListener implements Listener
         if (otherInventory instanceof MerchantInventory &&
                 e.getSlot() == 2 &&
                 otherInventory.getItem(2) != null) {
-            MerchantRecipe merchantRecipe = ((MerchantInventory) otherInventory).getSelectedRecipe();
-            if (merchantRecipe == null)
-                return;
-
-            ItemStack recipeIngredient1 = merchantRecipe.getAdjustedIngredient1(),
-                    recipeIngredient2 = null;
-            if (merchantRecipe.getIngredients().get(1) != null)
-                recipeIngredient2 = merchantRecipe.getIngredients().get(1);
             ItemStack [] contents = otherInventory.getContents();
+            for (ItemStack itemStack : Arrays.stream(contents).limit(2).collect(Collectors.toList())) {
+                if (itemStack != null)
+                    ItemStackEconUtil.processValuableDeduction(itemStack);
+            }
 
-            if (!e.isShiftClick()) {
-                if (contents[0] != null && recipeIngredient1 != null)
-                    ItemStackEconUtil.processValuableDeduction(contents[0],
-                            contents[0].getAmount() - recipeIngredient1.getAmount());
-                if (contents[1] != null && recipeIngredient2 != null)
-                    ItemStackEconUtil.processValuableDeduction(contents[1],
-                            contents[1].getAmount() - recipeIngredient2.getAmount());
-            }
-            else {
-                if (contents[0] != null && recipeIngredient1 != null)
-                    ItemStackEconUtil.processValuableDeduction(contents[0],
-                            contents[0].getAmount() -
-                                    (contents[0].getAmount()/recipeIngredient1.getAmount()) * recipeIngredient1.getAmount());
-                if (contents[1] != null && recipeIngredient2 != null)
-                    ItemStackEconUtil.processValuableDeduction(contents[1],
-                            contents[1].getAmount() -
-                                    (contents[1].getAmount()/recipeIngredient2.getAmount()) * recipeIngredient2.getAmount());
-            }
+//            MerchantRecipe merchantRecipe = ((MerchantInventory) otherInventory).getSelectedRecipe();
+//            if (merchantRecipe == null)
+//                return;
+//
+//            ItemStack recipeIngredient1 = merchantRecipe.getAdjustedIngredient1(),
+//                    recipeIngredient2 = null;
+//            if (merchantRecipe.getIngredients().get(1) != null)
+//                recipeIngredient2 = merchantRecipe.getIngredients().get(1);
+//
+//            if (!e.isShiftClick()) {
+//                if (contents[0] != null && recipeIngredient1 != null)
+//                    ItemStackEconUtil.processValuableDeduction(contents[0],
+//                            contents[0].getAmount() - recipeIngredient1.getAmount());
+//                if (contents[1] != null && recipeIngredient2 != null)
+//                    ItemStackEconUtil.processValuableDeduction(contents[1],
+//                            contents[1].getAmount() - recipeIngredient2.getAmount());
+//            }
+//            else {
+//                if (contents[0] != null && recipeIngredient1 != null)
+//                    ItemStackEconUtil.processValuableDeduction(contents[0],
+//                            contents[0].getAmount() -
+//                                    (contents[0].getAmount()/recipeIngredient1.getAmount()) * recipeIngredient1.getAmount());
+//                if (contents[1] != null && recipeIngredient2 != null)
+//                    ItemStackEconUtil.processValuableDeduction(contents[1],
+//                            contents[1].getAmount() -
+//                                    (contents[1].getAmount()/recipeIngredient2.getAmount()) * recipeIngredient2.getAmount());
         }
         else if (otherInventory instanceof AnvilInventory &&
                 e.getSlotType() == InventoryType.SlotType.RESULT) {

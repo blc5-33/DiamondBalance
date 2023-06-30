@@ -11,8 +11,10 @@ public class ItemPickupListener implements Listener
 {
     @EventHandler
     public void onValuablePickup(PlayerAttemptPickupItemEvent e) {
-        if (e.getPlayer().getGameMode() == GameMode.CREATIVE)
+        if (e.getPlayer().getGameMode() == GameMode.CREATIVE) {
+            ItemStackEconUtil.processValuableDeduction(e.getItem().getItemStack());
             return;
+        }
         ItemStackEconUtil.processValuableTransfer(e.getPlayer(), e.getItem().getItemStack());
     }
 }
