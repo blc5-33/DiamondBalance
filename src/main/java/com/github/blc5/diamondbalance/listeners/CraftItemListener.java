@@ -25,7 +25,7 @@ public class CraftItemListener implements Listener {
 
         for (ItemStack itemStack : e.getInventory().getMatrix()) {
             if (itemStack != null)
-                ItemStackEconUtil.withdrawValuable(player, itemStack, itemStack.getAmount() - amountCrafts);
+                ItemStackEconUtil.processValuableDeduction(itemStack, itemStack.getAmount() - amountCrafts);
         }
 
         ItemStackEconUtil.processValuableTransfer(player, result);

@@ -56,6 +56,7 @@ public class InventoryItemClickListener implements Listener
 
         Player player = (Player) e.getWhoClicked();
 
+        // Creative player click events are ALWAYS PLACE_ALL
         if (player.getGameMode() == GameMode.CREATIVE ||
             player.getGameMode() == GameMode.SPECTATOR)
             return;

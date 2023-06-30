@@ -30,6 +30,11 @@ public class ItemStackEconUtil
         return true;
     }
 
+    public static boolean withdrawValuable(OfflinePlayer offlinePlayer, ItemStack itemStack) {
+        return withdrawValuable(offlinePlayer, itemStack, 0);
+    }
+
+    // Withhold default = 0
     public static boolean withdrawValuable(OfflinePlayer offlinePlayer, ItemStack itemStack, int withhold) {
         if (!isRegisteredValuable(itemStack))
             return false;
@@ -60,14 +65,26 @@ public class ItemStackEconUtil
             // event handling means that these will be subtracted if they don't pick it up. So it should be alright.
         }
         else if (! ((TextComponent)currLore.get(1)).content().equals(offlinePlayer.getUniqueId().toString())) {
-            OfflinePlayer other = DiamondBalance.server.getOfflinePlayer(UUID.fromString(
-                    ((TextComponent)currLore.get(1)).content()));
-            withdrawValuable(other, itemStack, 0);
+            processValuableDeduction(itemStack);
             depositValuable(offlinePlayer, itemStack);
             generateLore(offlinePlayer, itemStack);
         }
         else if (! ((TextComponent)currLore.get(0)).content().equals(offlinePlayer.getName())) {
             generateLore(offlinePlayer, itemStack);
+        }
+    }
+
+    public static void processValuableDeduction(ItemStack itemStack) {
+        processValuableDeduction(itemStack, 0);
+    }
+    public static void processValuableDeduction(ItemStack itemStack, int withhold) {
+        if (! isRegisteredValuable(itemStack))
+            return;
+        List<Component> currLore = itemStack.lore();
+        if (currLore != null) {
+            OfflinePlayer offlinePlayer = DiamondBalance.server.getOfflinePlayer(UUID.fromString(
+                    ((TextComponent)currLore.get(1)).content()));
+            withdrawValuable(offlinePlayer, itemStack, withhold);
         }
     }
 
