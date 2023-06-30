@@ -86,7 +86,10 @@ public class ItemStackEconUtil
             OfflinePlayer offlinePlayer = DiamondBalance.server.getOfflinePlayer(UUID.fromString(
                     ((TextComponent)currLore.get(1)).content()));
             withdrawValuable(offlinePlayer, itemStack, withhold);
-            itemStack.lore(null);
+
+            // If leftover after withheld, don't want to reset that lore
+            if (withhold == 0)
+                itemStack.lore(null);
         }
     }
 

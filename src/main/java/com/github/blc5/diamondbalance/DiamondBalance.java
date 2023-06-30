@@ -48,6 +48,7 @@ public final class DiamondBalance extends JavaPlugin {
         server.getPluginManager().registerEvents(new CraftItemListener(), this);
         server.getPluginManager().registerEvents(new PlayerJoinListener(), this);
         server.getPluginManager().registerEvents(new PlayerGameModeChangeListener(), this);
+//        server.getPluginManager().registerEvents(new PlayerPurchaseListener(), this);
     }
 
     private void registerCommands() {

@@ -1,5 +1,6 @@
 package com.github.blc5.diamondbalance.listeners;
 
+import com.github.blc5.diamondbalance.DiamondBalance;
 import com.github.blc5.diamondbalance.ItemStackEconUtil;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
@@ -7,6 +8,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.*;
 
 import java.util.HashSet;
 
@@ -50,7 +52,7 @@ public class InventoryItemClickListener implements Listener
 //        debugClickTypeMap.put(InventoryAction.UNKNOWN, "Unknown");
     }
     @EventHandler
-    public void onInventoryItemMove(InventoryClickEvent e) {
+    public void onInventoryClick(InventoryClickEvent e) {
         if (!(e.getWhoClicked() instanceof Player))
             return;
 
@@ -69,5 +71,48 @@ public class InventoryItemClickListener implements Listener
         else if (validAsyncActions.contains(e.getAction()) && e.getClickedInventory() == player.getInventory())
             ItemStackEconUtil.processValuableTransfer(player, e.getCursor());
 
+        // Special inventory processing
+        Inventory otherInventory = e.getClickedInventory();
+        if (otherInventory instanceof MerchantInventory &&
+                e.getSlot() == 2 &&
+                otherInventory.getItem(2) != null) {
+            MerchantRecipe merchantRecipe = ((MerchantInventory) otherInventory).getSelectedRecipe();
+            if (merchantRecipe == null)
+                return;
+
+            ItemStack recipeIngredient1 = merchantRecipe.getAdjustedIngredient1(),
+                    recipeIngredient2 = null;
+            if (merchantRecipe.getIngredients().get(1) != null)
+                recipeIngredient2 = merchantRecipe.getIngredients().get(1);
+            ItemStack [] contents = otherInventory.getContents();
+
+            if (!e.isShiftClick()) {
+                if (contents[0] != null && recipeIngredient1 != null)
+                    ItemStackEconUtil.processValuableDeduction(contents[0],
+                            contents[0].getAmount() - recipeIngredient1.getAmount());
+                if (contents[1] != null && recipeIngredient2 != null)
+                    ItemStackEconUtil.processValuableDeduction(contents[1],
+                            contents[1].getAmount() - recipeIngredient2.getAmount());
+            }
+            else {
+                if (contents[0] != null && recipeIngredient1 != null)
+                    ItemStackEconUtil.processValuableDeduction(contents[0],
+                            contents[0].getAmount() -
+                                    (contents[0].getAmount()/recipeIngredient1.getAmount()) * recipeIngredient1.getAmount());
+                if (contents[1] != null && recipeIngredient2 != null)
+                    ItemStackEconUtil.processValuableDeduction(contents[1],
+                            contents[1].getAmount() -
+                                    (contents[1].getAmount()/recipeIngredient2.getAmount()) * recipeIngredient2.getAmount());
+            }
+        }
+        else if (otherInventory instanceof AnvilInventory &&
+                e.getSlot() == 2 &&
+                otherInventory.getItem(2) != null) {
+            DiamondBalance.logger.info("Anvil inventory!");
+            AnvilInventory anvilInventory = (AnvilInventory) otherInventory;
+            ItemStackEconUtil.processValuableDeduction(anvilInventory.getFirstItem());
+            if (anvilInventory.getSecondItem() != null)
+                ItemStackEconUtil.processValuableDeduction(anvilInventory.getSecondItem());
+        }
     }
 }
