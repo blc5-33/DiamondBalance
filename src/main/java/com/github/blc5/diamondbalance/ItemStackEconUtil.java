@@ -30,7 +30,7 @@ public class ItemStackEconUtil
         return true;
     }
 
-    public static boolean withdrawValuable(OfflinePlayer offlinePlayer, ItemStack itemStack) {
+    public static boolean withdrawValuable(OfflinePlayer offlinePlayer, ItemStack itemStack, int withhold) {
         if (!isRegisteredValuable(itemStack))
             return false;
 
@@ -39,11 +39,11 @@ public class ItemStackEconUtil
                 "[%s] Player: %s , Amount to be withdrawn: %d",
                 DiamondBalance.server.getName(),
                 offlinePlayer.getName(),
-                DiamondBalance.materialValueMap.get(itemStack.getType().toString()) * itemStack.getAmount())
+                DiamondBalance.materialValueMap.get(itemStack.getType().toString()) * itemStack.getAmount() - withhold)
         );
 
         DiamondBalance.econ.withdrawPlayer(offlinePlayer,
-                DiamondBalance.materialValueMap.get(itemStack.getType().toString()) * itemStack.getAmount());
+                DiamondBalance.materialValueMap.get(itemStack.getType().toString()) * itemStack.getAmount() - withhold);
         return true;
     }
 
@@ -62,7 +62,7 @@ public class ItemStackEconUtil
         else if (! ((TextComponent)currLore.get(1)).content().equals(offlinePlayer.getUniqueId().toString())) {
             OfflinePlayer other = DiamondBalance.server.getOfflinePlayer(UUID.fromString(
                     ((TextComponent)currLore.get(1)).content()));
-            withdrawValuable(other, itemStack);
+            withdrawValuable(other, itemStack, 0);
             depositValuable(offlinePlayer, itemStack);
             generateLore(offlinePlayer, itemStack);
         }

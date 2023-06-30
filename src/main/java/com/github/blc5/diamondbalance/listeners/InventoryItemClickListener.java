@@ -51,19 +51,20 @@ public class InventoryItemClickListener implements Listener
     }
     @EventHandler
     public void onInventoryItemMove(InventoryClickEvent e) {
-        if (e.getWhoClicked() instanceof Player) {
-            Player player = (Player) e.getWhoClicked();
+        if (!(e.getWhoClicked() instanceof Player))
+            return;
 
-            if (player.getGameMode() == GameMode.CREATIVE ||
-                player.getGameMode() == GameMode.SPECTATOR)
-                return;
+        Player player = (Player) e.getWhoClicked();
+
+        if (player.getGameMode() == GameMode.CREATIVE ||
+            player.getGameMode() == GameMode.SPECTATOR)
+            return;
 
 //            DiamondBalance.logger.info(String.format("Click Type: %s", debugClickTypeMap.get(e.getAction())));
-            if (validInstantActions.contains(e.getAction()))
-                ItemStackEconUtil.processValuableTransfer(player, e.getCurrentItem());
-            else if (validAsyncActions.contains(e.getAction()) && e.getClickedInventory() == player.getInventory())
-                ItemStackEconUtil.processValuableTransfer(player, e.getCursor());
+        if (validInstantActions.contains(e.getAction()))
+            ItemStackEconUtil.processValuableTransfer(player, e.getCurrentItem());
+        else if (validAsyncActions.contains(e.getAction()) && e.getClickedInventory() == player.getInventory())
+            ItemStackEconUtil.processValuableTransfer(player, e.getCursor());
 
-        }
     }
 }

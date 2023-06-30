@@ -1,6 +1,7 @@
 package com.github.blc5.diamondbalance;
 
 import com.github.blc5.diamondbalance.commands.CommandSetItemOwner;
+import com.github.blc5.diamondbalance.listeners.CraftItemListener;
 import com.github.blc5.diamondbalance.listeners.InventoryItemClickListener;
 import com.github.blc5.diamondbalance.listeners.ItemPickupListener;
 import com.github.blc5.diamondbalance.listeners.PlayerBeaconChangeListener;
@@ -30,7 +31,7 @@ public final class DiamondBalance extends JavaPlugin {
         logger = getLogger();
         if (!setupEconomy()) {
             logger.severe("Disabled due to no Vault dependency found!");
-            getServer().getPluginManager().disablePlugin(this);
+            server.getPluginManager().disablePlugin(this);
             return;
         }
         registerListeners();
@@ -44,13 +45,14 @@ public final class DiamondBalance extends JavaPlugin {
     }
 
     private void registerListeners() {
-        getServer().getPluginManager().registerEvents(new ItemPickupListener(), this);
-        getServer().getPluginManager().registerEvents(new InventoryItemClickListener(), this);
-        getServer().getPluginManager().registerEvents(new PlayerBeaconChangeListener(), this);
+        server.getPluginManager().registerEvents(new ItemPickupListener(), this);
+        server.getPluginManager().registerEvents(new InventoryItemClickListener(), this);
+        server.getPluginManager().registerEvents(new PlayerBeaconChangeListener(), this);
+        server.getPluginManager().registerEvents(new CraftItemListener(), this);
     }
 
     private void registerCommands() {
-        getServer().getCommandMap().register(cmdPrefix, new CommandSetItemOwner(this));
+        server.getCommandMap().register(cmdPrefix, new CommandSetItemOwner(this));
     }
 
     private void registerMaterialValues() {
@@ -76,10 +78,10 @@ public final class DiamondBalance extends JavaPlugin {
 
 
     private boolean setupEconomy() {
-        if (getServer().getPluginManager().getPlugin("Vault") == null) {
+        if (server.getPluginManager().getPlugin("Vault") == null) {
             return false;
         }
-        RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
+        RegisteredServiceProvider<Economy> rsp = server.getServicesManager().getRegistration(Economy.class);
         if (rsp == null) {
             return false;
         }

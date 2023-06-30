@@ -10,6 +10,6 @@ public class PlayerBeaconChangeListener implements Listener {
     @EventHandler
     public void onPlayerBeaconEffectChange(PlayerChangeBeaconEffectEvent e) {
         ItemStackEconUtil.withdrawValuable(e.getPlayer(),
-                ((BeaconInventory)e.getPlayer().getOpenInventory().getTopInventory()).getItem());
+                ((BeaconInventory)e.getPlayer().getOpenInventory().getTopInventory()).getItem(), 0);
     }
 }
