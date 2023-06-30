@@ -20,60 +20,62 @@ public class CommandSetItemOwner extends Command
         super("dbsetitemowner", "Sets the held item's owner to the specified player/UUID"
                 , "name: player name", Collections.emptyList());
         this.plugin = plugin;
+        setPermission("diamondbalance.admin.setitemowner");
     }
 
     public boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, @NotNull String[] args) {
 
-        if (sender instanceof Player)
-        {
-            if (args.length == 0)
-            {
-                sender.sendMessage(Component.text(String.format("[%s] No player name provided!",
-                        plugin.getName())).color(NamedTextColor.YELLOW));
-                return false;
-            }
-            else if (args.length > 1)
-            {
-                sender.sendMessage(Component.text(String.format("[%s] Too many arguments!",
-                        plugin.getName())).color(NamedTextColor.YELLOW));
-                return false;
-            }
-
-            Player player = (Player) sender;
-            OfflinePlayer specifiedPlayer = plugin.getServer().getOfflinePlayer(args[0]);
-            ItemStack itemStack = player.getInventory().getItemInMainHand();
-            if (ItemStackEconUtil.isRegisteredValuable(itemStack))
-            {
-                if (!DiamondBalance.econ.hasAccount(specifiedPlayer))
-                {
-                    player.sendMessage(Component.text(String.format("[%s] Player does not have player bank account.",
-                            plugin.getName())).color(NamedTextColor.YELLOW));
-
-                    if (DiamondBalance.econ.createPlayerAccount(specifiedPlayer))
-                    {
-                        player.sendMessage(Component.text(String.format("[%s] Player account successfully created.",
-                                plugin.getName())).color(NamedTextColor.GREEN));
-                    }
-                    else
-                        player.sendMessage(Component.text(String.format(
-                                "[%s] Could not create player account! Action failed.",
-                                plugin.getName())).color(NamedTextColor.RED));
-                }
-
-                if (DiamondBalance.econ.hasAccount(specifiedPlayer))
-                {
-                    player.sendMessage(Component.text(String.format("[%s] Item lore owner updated.",
-                            plugin.getName())).color(NamedTextColor.GREEN));
-                    ItemStackEconUtil.processValuableTransfer(specifiedPlayer, itemStack);
-                }
-            }
-            else
-                player.sendMessage(Component.text(String.format("[%s] This item does not have an assigned value!",
-                        plugin.getName())).color(NamedTextColor.YELLOW));
-        }
-        else
+        if (! (sender instanceof Player)) {
             sender.sendMessage(Component.text(String.format(
                     "[%s] Only players can execute this command!",
+                    plugin.getName())).color(NamedTextColor.YELLOW));
+            return false;
+        }
+
+        Player player = (Player) sender;
+
+        if (args.length == 0)
+        {
+            player.sendMessage(Component.text(String.format("[%s] No player name provided!",
+                    plugin.getName())).color(NamedTextColor.YELLOW));
+            return false;
+        }
+        else if (args.length > 1)
+        {
+            player.sendMessage(Component.text(String.format("[%s] Too many arguments!",
+                    plugin.getName())).color(NamedTextColor.YELLOW));
+            return false;
+        }
+
+        OfflinePlayer specifiedPlayer = plugin.getServer().getOfflinePlayer(args[0]);
+        ItemStack itemStack = player.getInventory().getItemInMainHand();
+        if (ItemStackEconUtil.isRegisteredValuable(itemStack))
+        {
+            if (!DiamondBalance.econ.hasAccount(specifiedPlayer))
+            {
+                player.sendMessage(Component.text(String.format("[%s] Player does not have player bank account.",
+                        plugin.getName())).color(NamedTextColor.YELLOW));
+
+                if (DiamondBalance.econ.createPlayerAccount(specifiedPlayer))
+                {
+                    player.sendMessage(Component.text(String.format("[%s] Player account successfully created.",
+                            plugin.getName())).color(NamedTextColor.GREEN));
+                }
+                else
+                    player.sendMessage(Component.text(String.format(
+                            "[%s] Could not create player account! Action failed.",
+                            plugin.getName())).color(NamedTextColor.RED));
+            }
+
+            if (DiamondBalance.econ.hasAccount(specifiedPlayer))
+            {
+                player.sendMessage(Component.text(String.format("[%s] Item lore owner updated.",
+                        plugin.getName())).color(NamedTextColor.GREEN));
+                ItemStackEconUtil.processValuableTransfer(specifiedPlayer, itemStack);
+            }
+        }
+        else
+            player.sendMessage(Component.text(String.format("[%s] This item does not have an assigned value!",
                     plugin.getName())).color(NamedTextColor.YELLOW));
         return true;
     }
