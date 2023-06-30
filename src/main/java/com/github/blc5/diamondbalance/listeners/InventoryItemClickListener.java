@@ -1,6 +1,5 @@
 package com.github.blc5.diamondbalance.listeners;
 
-import com.github.blc5.diamondbalance.DiamondBalance;
 import com.github.blc5.diamondbalance.ItemStackEconUtil;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
@@ -8,6 +7,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.*;
 
 import java.util.HashSet;
@@ -106,13 +106,27 @@ public class InventoryItemClickListener implements Listener
             }
         }
         else if (otherInventory instanceof AnvilInventory &&
-                e.getSlot() == 2 &&
-                otherInventory.getItem(2) != null) {
-            DiamondBalance.logger.info("Anvil inventory!");
+                e.getSlotType() == InventoryType.SlotType.RESULT) {
             AnvilInventory anvilInventory = (AnvilInventory) otherInventory;
+            if (anvilInventory.getResult() == null)
+                return;
+
             ItemStackEconUtil.processValuableDeduction(anvilInventory.getFirstItem());
             if (anvilInventory.getSecondItem() != null)
                 ItemStackEconUtil.processValuableDeduction(anvilInventory.getSecondItem());
+        }
+        else if (otherInventory instanceof SmithingInventory &&
+                e.getSlotType() == InventoryType.SlotType.RESULT) {
+            SmithingInventory smithingInventory = (SmithingInventory) otherInventory;
+            if (smithingInventory.getResult() == null)
+                return;
+
+            if (smithingInventory.getInputTemplate() != null)
+                ItemStackEconUtil.processValuableDeduction(smithingInventory.getInputTemplate());
+            if (smithingInventory.getInputEquipment() != null)
+                ItemStackEconUtil.processValuableDeduction(smithingInventory.getInputEquipment());
+            if (smithingInventory.getInputMineral() != null)
+                ItemStackEconUtil.processValuableDeduction(smithingInventory.getInputMineral());
         }
     }
 }
