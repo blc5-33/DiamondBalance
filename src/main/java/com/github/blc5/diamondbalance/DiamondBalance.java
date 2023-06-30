@@ -50,6 +50,7 @@ public final class DiamondBalance extends JavaPlugin {
         server.getPluginManager().registerEvents(new PlayerGameModeChangeListener(), this);
         server.getPluginManager().registerEvents(new ItemDespawnListener(), this);
         server.getPluginManager().registerEvents(new EntityRemoveFromWorldListener(), this);
+        server.getPluginManager().registerEvents(new BlockPlaceListener(), this);
     }
 
     private void registerCommands() {
