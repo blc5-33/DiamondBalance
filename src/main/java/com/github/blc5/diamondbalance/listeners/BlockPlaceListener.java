@@ -10,7 +10,9 @@ public class BlockPlaceListener implements Listener {
     @EventHandler
     public void onBlockPlace(BlockPlaceEvent e) {
         ItemStack itemStack = e.getItemInHand();
-        ItemStackEconUtil.processValuableDeduction(itemStack);
-        itemStack.setAmount(itemStack.getAmount() - 1);
+        if (ItemStackEconUtil.isRegisteredValuable(itemStack)) {
+            ItemStackEconUtil.processValuableDeduction(itemStack);
+            itemStack.setAmount(itemStack.getAmount() - 1);
+        }
     }
 }
