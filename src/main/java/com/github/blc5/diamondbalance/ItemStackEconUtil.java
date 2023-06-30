@@ -19,12 +19,12 @@ public class ItemStackEconUtil
             return false;
 
         // Debug
-        DiamondBalance.logger.info(String.format(
-                "[%s] Player: %s , Amount to be deposited: %d",
-                DiamondBalance.server.getName(),
-                offlinePlayer.getName(),
-                DiamondBalance.materialValueMap.get(itemStack.getType().toString()) * itemStack.getAmount())
-        );
+//        DiamondBalance.logger.info(String.format(
+//                "[%s] Player: %s , Amount to be deposited: %d",
+//                DiamondBalance.server.getName(),
+//                offlinePlayer.getName(),
+//                DiamondBalance.materialValueMap.get(itemStack.getType().toString()) * itemStack.getAmount())
+//        );
         DiamondBalance.econ.depositPlayer(offlinePlayer,
                 DiamondBalance.materialValueMap.get(itemStack.getType().toString()) * itemStack.getAmount());
         return true;
@@ -40,12 +40,12 @@ public class ItemStackEconUtil
             return false;
 
         // Debug
-        DiamondBalance.logger.info(String.format(
-                "[%s] Player: %s , Amount to be withdrawn: %d",
-                DiamondBalance.server.getName(),
-                offlinePlayer.getName(),
-                DiamondBalance.materialValueMap.get(itemStack.getType().toString()) * itemStack.getAmount() - withhold)
-        );
+//        DiamondBalance.logger.info(String.format(
+//                "[%s] Player: %s , Amount to be withdrawn: %d",
+//                DiamondBalance.server.getName(),
+//                offlinePlayer.getName(),
+//                DiamondBalance.materialValueMap.get(itemStack.getType().toString()) * itemStack.getAmount() - withhold)
+//        );
 
         DiamondBalance.econ.withdrawPlayer(offlinePlayer,
                 DiamondBalance.materialValueMap.get(itemStack.getType().toString()) * itemStack.getAmount() - withhold);
